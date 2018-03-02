@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using Actors;
 using Akka.Actor;
+using Akka.Configuration;
 using Akka.Routing;
 
 namespace ApiService
@@ -13,16 +11,17 @@ namespace ApiService
     {
         static void Main(string[] args)
         {
-            ActorSystem actorSystem = ActorSystem.Create("moviedb");
+            var config = ConfigurationFactory.ParseString(File.ReadAllText("akka-config.hocon"));
+            ActorSystem actorSystem = ActorSystem.Create("moviedb", config);
 
             IActorRef watchedVideo = actorSystem.ActorOf(Props.Create<WatchedVideoRepoActor>().WithRouter(FromConfig.Instance), "watchedVideo");
             IActorRef videoRepo = actorSystem.ActorOf(Props.Create<VideoRepoActor>().WithRouter(FromConfig.Instance), "videoRepo");
 
             IActorRef apiActor = actorSystem.ActorOf(Props.Create<ApiActor>(watchedVideo, videoRepo), "api");
 
-            Console.ReadLine(); 
+            Console.ReadLine();
 
-            actorSystem.WhenTerminated.Wait();
+            CoordinatedShutdown.Get(actorSystem).Run().Wait();
         }
     }
 }

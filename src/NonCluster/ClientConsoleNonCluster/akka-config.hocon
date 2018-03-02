@@ -1,0 +1,21 @@
+﻿akka {
+	actor {
+		deployment {
+
+			/videoRepo {
+				router = round-robin-pool
+				nr-of-instances = 2
+			}
+	
+			/watchedVideo {
+				router = round-robin-pool
+				nr-of-instances = 1
+			}
+
+			/api/recommandation {
+				router = round-robin-pool
+				nr-of-instances = 4
+			}
+		}
+	}
+}

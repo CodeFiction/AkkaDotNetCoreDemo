@@ -10,32 +10,21 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-using Topshelf;
+
+using System;
+using Akka.Actor;
 
 namespace Lighthouse
 {
     class Program
     {
-        static int Main(string[] args)
+        static void Main(string[] args)
         {
-            return (int) HostFactory.Run(x =>
-            {
-                x.Service<LighthouseService>(s =>
-                {
-                    s.ConstructUsing(ss => new LighthouseService());
-                    s.WhenStarted(ss => ss.Start());
-                    s.WhenStopped(ss => ss.StopAsync().Wait());
-                });
+            ActorSystem lighthouseSystem = LighthouseHostFactory.LaunchLighthouse();
 
-                x.SetServiceName("Lighthouse");
-                x.SetDisplayName("Lighthouse Service Discovery");
-                x.SetDescription("Lighthouse Service Discovery for Akka.NET Clusters");
+            Console.ReadLine();
 
-                x.RunAsNetworkService();
-                x.StartAutomatically();
-                x.UseNLog();
-                x.EnableServiceRecovery(r => r.RestartService(1));
-            });
+            CoordinatedShutdown.Get(lighthouseSystem).Run().Wait();
         }
     }
 }

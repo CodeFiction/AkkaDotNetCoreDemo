@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using Akka.Actor;
+using Akka.Configuration;
 
 namespace RecommendationService
 {
@@ -11,11 +9,13 @@ namespace RecommendationService
     {
         static void Main(string[] args)
         {
-            ActorSystem actorSystem = ActorSystem.Create("moviedb");
+            var config = ConfigurationFactory.ParseString(File.ReadAllText("akka-config.hocon"));
+
+            ActorSystem actorSystem = ActorSystem.Create("moviedb", config);
 
             Console.ReadLine();
 
-            actorSystem.WhenTerminated.Wait();
+            CoordinatedShutdown.Get(actorSystem).Run().Wait();
         }
     }
 }
