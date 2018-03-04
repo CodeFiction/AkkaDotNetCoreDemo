@@ -8,15 +8,15 @@ namespace Actors.Models
 {
     public class Video
     {
-        public int Id { get; }
+        public int Id { get; set; }
 
-        public string Title { get; }
+        public string Title { get;  set;}
 
-        public string Genre { get; }
+        public string Genre { get; set; }
 
-        public string RunningTime { get; }
+        public string RunningTime { get; set;}
 
-        public double Rating { get; }
+        public double Rating { get; set;}
 
         public Video(int id, string title, string genre, string runningTime, double rating)
         {

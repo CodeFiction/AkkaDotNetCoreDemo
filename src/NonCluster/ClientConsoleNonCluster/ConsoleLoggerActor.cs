@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Actors.Messages;
+using Actors.Models;
 using Akka.Actor;
+using Newtonsoft.Json;
 
 namespace ClientConsoleNonCluster
 {
@@ -13,8 +16,13 @@ namespace ClientConsoleNonCluster
         {
             Receive<RecommendationResponse>(response =>
             {
-                foreach (var responseResponseVideo in response.ResponseVideos)
+                // Issue about interoperability between .NET Full and .NET Core versions
+                // https://github.com/akkadotnet/akka.net/issues/3226
+                var videos = JsonConvert.DeserializeObject<IList<Video>>(response.ResponseVideosJsonPaylod);
+                
+                foreach (var responseResponseVideo in videos)
                 {
+
                     Console.WriteLine(responseResponseVideo);
                 }
 

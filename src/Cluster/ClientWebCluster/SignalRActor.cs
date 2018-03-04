@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Actors.Messages;
+using Actors.Models;
 using Akka.Actor;
 using Microsoft.AspNet.SignalR;
+using Newtonsoft.Json;
 
 namespace ClientWebCluster
 {
@@ -13,7 +16,11 @@ namespace ClientWebCluster
         {
             Receive<RecommendationResponse>(response =>
             {
-                _hubContext.Clients.Client(response.UserId).videoResponse(response.ResponseVideos.OrderByDescending(video => video.Id).ToArray());
+                // Issue about interoperability between .NET Full and .NET Core versions
+                // https://github.com/akkadotnet/akka.net/issues/3226
+                var videos = JsonConvert.DeserializeObject<List<Video>>(response.ResponseVideosJsonPaylod);
+
+                _hubContext.Clients.Client(response.UserId).videoResponse(videos.OrderByDescending(video => video.Id).ToArray());
             });
 
             Receive<VideoStatus>(response =>

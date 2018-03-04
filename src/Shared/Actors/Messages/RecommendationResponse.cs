@@ -6,17 +6,17 @@ namespace Actors.Messages
     public class RecommendationResponse
     {
         private readonly string _userId;
-        private readonly List<Video> _responseVideos;
+        private readonly string _responseVideosJsonPaylod;
 
-        public RecommendationResponse(string userId, List<Video> responseVideos)
+        public RecommendationResponse(string userId, string responseVideosJsonPaylod)
         {
             _userId = userId;
-            _responseVideos = responseVideos;
+            _responseVideosJsonPaylod = responseVideosJsonPaylod;
         }
 
-        public List<Video> ResponseVideos
+        public string ResponseVideosJsonPaylod
         {
-            get { return _responseVideos; }
+            get { return _responseVideosJsonPaylod; }
         }
 
         public string UserId

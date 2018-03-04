@@ -6,6 +6,7 @@ using Actors.Messages;
 using Actors.Models;
 using Akka.Actor;
 using Akka.Routing;
+using Newtonsoft.Json;
 
 namespace Actors
 {
@@ -76,13 +77,16 @@ namespace Actors
                 Console.WriteLine($"{response.Recommendation.UserId} icin tavsiye edilecek video'ların cevabı geldi.");
                 Console.ResetColor();
 
+                // Issue about interoperability between .NET Full and .NET Core versions
+                // https://github.com/akkadotnet/akka.net/issues/3226
                 Video[] responseVideos = response.Videos;
+                var responseVideoJsonPaylod = JsonConvert.SerializeObject(responseVideos);
 
                 Thread.Sleep(50);
 
                 IActorRef sender = response.Recommendation.Client;
 
-                sender.Tell(new RecommendationResponse(response.Recommendation.UserId, responseVideos.ToList()));
+                sender.Tell(new RecommendationResponse(response.Recommendation.UserId, responseVideoJsonPaylod));
 
                 // Self.Tell(PoisonPill.Instance); // Özel tipte bir mesaj, actor'ün kendini yok etmesini sağlıyor. Bu adımdan itibaren actor'le işimiz kalmıyor.
             });
