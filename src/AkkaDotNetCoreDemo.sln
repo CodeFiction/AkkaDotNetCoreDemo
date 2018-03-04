@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{DAC36BDC-AB62-4BCE-9DD1-224A8201AAC1}"
 EndProject
@@ -13,17 +13,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientWebNonCluster", "NonC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microservices", "Microservices", "{EAA0F50D-B38D-4576-AAEB-93440DA5BB29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lighthouse", "Microservices\Lighthouse\Lighthouse.csproj", "{87BE1ABF-1F59-41AB-A3CB-4B1E7E0B218A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lighthouse", "Microservices\Lighthouse\Lighthouse.csproj", "{87BE1ABF-1F59-41AB-A3CB-4B1E7E0B218A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecommendationService", "Microservices\RecommendationService\RecommendationService.csproj", "{A6D42A4B-0414-4C43-8082-90EE31B0DC5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecommendationService", "Microservices\RecommendationService\RecommendationService.csproj", "{A6D42A4B-0414-4C43-8082-90EE31B0DC5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieRepoService", "Microservices\MovieRepoService\MovieRepoService.csproj", "{4421A527-97F2-47F0-BEE6-A1E5C2E08091}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieRepoService", "Microservices\MovieRepoService\MovieRepoService.csproj", "{4421A527-97F2-47F0-BEE6-A1E5C2E08091}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cluster", "Cluster", "{A6CD3A3B-7659-4849-9AA8-9BFD0D022C5F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientWebCluster", "Cluster\ClientWebCluster\ClientWebCluster.csproj", "{EBE5E2C9-7051-4F9B-B068-54C6631C49D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiService", "Microservices\ApiService\ApiService.csproj", "{802FD7AE-BFDE-4473-BA13-FB2CEDAAA260}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiService", "Microservices\ApiService\ApiService.csproj", "{802FD7AE-BFDE-4473-BA13-FB2CEDAAA260}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Actors", "Shared\Actors\Actors.csproj", "{45C47E38-32D7-4D14-984E-65CEBB57A9B8}"
 EndProject

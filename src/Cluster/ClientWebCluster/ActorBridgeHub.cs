@@ -4,7 +4,6 @@ using Actors.Models;
 using Akka.Actor;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
-using ActorRefs = ClientWebCluster.ActorRefs;
 
 namespace ClientWebCluster
 {
