@@ -14,11 +14,11 @@ namespace Actors.Models
 
         public string Genre { get; }
 
-        public TimeSpan RunningTime { get; }
+        public string RunningTime { get; }
 
         public double Rating { get; }
 
-        public Video(int id, string title, string genre, TimeSpan runningTime, double rating)
+        public Video(int id, string title, string genre, string runningTime, double rating)
         {
             Id = id;
             Title = title;

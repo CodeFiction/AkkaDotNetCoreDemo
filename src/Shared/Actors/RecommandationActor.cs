@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Actors.Messages;
 using Actors.Models;
@@ -8,65 +9,52 @@ using Akka.Routing;
 
 namespace Actors
 {
-    public class RecommandationActor : ReceiveActor
+    public class RecommandationActor : ReceiveActor, IWithUnboundedStash
     {
         private readonly IActorRef _watchedVideoActor;
         private readonly IActorRef _videoRepoActor;
 
         private ICancelable _startAttempts;
 
+        public IStash Stash { get; set; }
+
         public RecommandationActor(IActorRef watchedVideoActor, IActorRef videoRepoActor)
         {
             _watchedVideoActor = watchedVideoActor;
-            _videoRepoActor = videoRepoActor;    
-            
-            Attempt();      
+            _videoRepoActor = videoRepoActor;
+
+            StartTakeRecommandationRequest();
         }
 
-        public void Attempt()
+        private void StopTakeRecommandationRequest()
         {
+            HandleCheckRecommendationSystemAvailable();
+
+            Receive<StartRecommendation>(recommendation =>
+            {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine("Video tavsiye isteğinde bulunulamıyor, lütfen daha sonra tekrar deneyiniz.");
+                Console.ResetColor();
+
+                Stash.Stash();
+            });
+        }
+
+        private void StartTakeRecommandationRequest()
+        {
+            Stash?.UnstashAll();
+
+            HandleCheckRecommendationSystemAvailable();
+
             Receive<StartRecommendation>(recommendation =>
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"{recommendation.UserId} video tavsiye isteğinde bulundu");
+                Console.WriteLine($"{recommendation.UserId} icin önceden izlemis oldugu video'lar soruluyor");
                 Console.ResetColor();
 
-                _startAttempts = Context.System.Scheduler.ScheduleTellRepeatedlyCancelable(TimeSpan.Zero, TimeSpan.FromMilliseconds(200), Self, new BeginAttempt(recommendation), ActorRefs.NoSender);
+                Thread.Sleep(50);
 
-                Become(StartRecommendation);
-            });
-        }
-
-        public void StartRecommendation()
-        {
-            Receive<BeginAttempt>(attempt =>
-            {
-                Task<Routees> watchedVideoRoutees = _watchedVideoActor.Ask<Routees>(new GetRoutees());
-                Task<Routees> videoRoutees = _videoRepoActor.Ask<Routees>(new GetRoutees());
-
-                Task.WhenAll(watchedVideoRoutees, videoRoutees)
-                    .ContinueWith(allRoutess => new JobAttemptMessage(attempt.Recommendation, allRoutess.Result.All(routees => routees.Members.Any())))
-                    .PipeTo(Self);
-            });
-
-            Receive<JobAttemptMessage>(message =>
-            {
-                if (!message.CanStart)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Film tavsiyesinde bulunulamiyor. Movie Repository ve Watched Video ayakta degil");
-                    Console.ResetColor();
-
-                    return;
-                }
-
-                _startAttempts.Cancel();
-
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"{message.Job.UserId} icin önceden izlemis oldugu video'lar soruluyor");
-                Console.ResetColor();
-
-                _watchedVideoActor.Tell(new UserWatchedVideoRequest(message.Job));
+                _watchedVideoActor.Tell(new UserWatchedVideoRequest(recommendation));
             });
 
             Receive<UserWatchedVideoResponse>(response =>
@@ -76,6 +64,8 @@ namespace Actors
                 Console.ResetColor();
 
                 int[] watchedVideos = response.VideoIds;
+
+                Thread.Sleep(50);
 
                 _videoRepoActor.Tell(new UserUnwatchedVideoRequest(response.StartRecommendation, watchedVideos));
             });
@@ -88,10 +78,46 @@ namespace Actors
 
                 Video[] responseVideos = response.Videos;
 
-                response.Recommendation.Client.Tell(new RecommendationResponse(response.Recommendation.UserId, responseVideos));
+                Thread.Sleep(50);
+
+                IActorRef sender = response.Recommendation.Client;
+
+                sender.Tell(new RecommendationResponse(response.Recommendation.UserId, responseVideos.ToList()));
 
                 // Self.Tell(PoisonPill.Instance); // Özel tipte bir mesaj, actor'ün kendini yok etmesini sağlıyor. Bu adımdan itibaren actor'le işimiz kalmıyor.
             });
+        }
+
+        private void HandleCheckRecommendationSystemAvailable()
+        {
+            ReceiveAsync<CheckRecommendationSystemAvailable>(async attempt =>
+            {
+                Task<Routees> watchedVideoRoutees = _watchedVideoActor.Ask<Routees>(new GetRoutees());
+                Task<Routees> videoRoutees = _videoRepoActor.Ask<Routees>(new GetRoutees());
+
+                Routees[] routeeses = await Task.WhenAll(watchedVideoRoutees, videoRoutees);
+
+                bool systemHealty = routeeses.All(routees => routees.Members.Any());
+
+                if (systemHealty)
+                {
+                    Become(StartTakeRecommandationRequest);
+                }
+                else
+                {
+                    Become(StopTakeRecommandationRequest);
+                }
+            });
+        }
+
+        protected override void PreStart()
+        {
+            _startAttempts = Context.System.Scheduler.ScheduleTellRepeatedlyCancelable(TimeSpan.Zero, TimeSpan.FromSeconds(5), Self, new CheckRecommendationSystemAvailable(), ActorRefs.NoSender);
+        }
+
+        protected override void PostStop()
+        {
+            _startAttempts.Cancel();
         }
     }
 }

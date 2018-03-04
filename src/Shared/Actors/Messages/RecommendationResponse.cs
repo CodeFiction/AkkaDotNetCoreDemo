@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Actors.Models;
 
 namespace Actors.Messages
@@ -5,15 +6,15 @@ namespace Actors.Messages
     public class RecommendationResponse
     {
         private readonly string _userId;
-        private readonly Video[] _responseVideos;
+        private readonly List<Video> _responseVideos;
 
-        public RecommendationResponse(string userId, Video[] responseVideos)
+        public RecommendationResponse(string userId, List<Video> responseVideos)
         {
             _userId = userId;
             _responseVideos = responseVideos;
         }
 
-        public Video[] ResponseVideos
+        public List<Video> ResponseVideos
         {
             get { return _responseVideos; }
         }

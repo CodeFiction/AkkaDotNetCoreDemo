@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Actors.ExternalApi;
 using Actors.Messages;
 using Actors.Models;
@@ -22,6 +23,8 @@ namespace Actors
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine($"{request.ResponseStartRecommendation.UserId} icin onceden izlemis oldugu video'ların bilgisi geldi, tavsiye edilecek video'lar getiriliyor");
                 Console.ResetColor();
+
+                Thread.Sleep(50);
 
                 Video[] unseenVideos = _movieRepository.GetUnseenVideos(request.Videos ?? new int[0]);
 

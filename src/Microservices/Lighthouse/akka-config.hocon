@@ -16,7 +16,6 @@ akka {
 	}
 
 	remote {
-		log-remote-lifecycle-events = DEBUG
 		dot-netty.tcp {
 			transport-class = "Akka.Remote.Transport.DotNetty.TcpTransport, Akka.Remote"
 			applied-adapters = []

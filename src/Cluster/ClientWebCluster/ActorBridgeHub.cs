@@ -18,12 +18,12 @@ namespace ClientWebCluster
 
         public void Login()
         {
-            ActorRefs.ApiActor.Tell(new LoginMessage(Context.ConnectionId), ActorRefs.SignalRActor);
+            ActorRefs.ApiActor.Tell(new LoginMessage(Context.ConnectionId, ActorRefs.SignalRActor));
         }
 
         public void Watch(int movieId)
         {
-            ActorRefs.ApiActor.Tell(new WatchedVideoEvent(Context.ConnectionId, movieId), ActorRefs.SignalRActor);
+            ActorRefs.ApiActor.Tell(new WatchVideoEvent(Context.ConnectionId, movieId, ActorRefs.SignalRActor));
         }
 
         public void VideoResponse(Video[] videos)

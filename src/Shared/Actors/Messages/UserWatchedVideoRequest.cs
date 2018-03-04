@@ -2,16 +2,16 @@ namespace Actors.Messages
 {
     public class UserWatchedVideoRequest
     {
-        private readonly StartRecommendation _attemptRecommendation;
+        private readonly StartRecommendation _recommendation;
 
-        public UserWatchedVideoRequest(StartRecommendation attemptRecommendation)
+        public UserWatchedVideoRequest(StartRecommendation recommendation)
         {
-            _attemptRecommendation = attemptRecommendation;
+            _recommendation = recommendation;
         }
 
-        public StartRecommendation AttemptRecommendation
+        public StartRecommendation Recommendation
         {
-            get { return _attemptRecommendation; }
+            get { return _recommendation; }
         }
     }
 }
