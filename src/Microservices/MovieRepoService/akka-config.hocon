@@ -1,0 +1,26 @@
+﻿akka {
+	actor {
+		provider = "Akka.Cluster.ClusterActorRefProvider, Akka.Cluster"
+	 
+		serializers {
+			hyperion = "Akka.Serialization.HyperionSerializer, Akka.Serialization.Hyperion"
+		}
+   
+		serialization-bindings {
+			"System.Object" = hyperion
+		}
+	}
+
+	remote {
+		dot-netty.tcp {
+			transport-class = "Akka.Remote.Transport.DotNetty.TcpTransport, Akka.Remote"
+			hostname = "127.0.0.1"
+			port = 4051
+		}
+	}            
+
+	cluster {
+		seed-nodes = ["akka.tcp://moviedb@127.0.0.1:4053"]
+		roles = [videoRepoRole]
+	}
+}

@@ -44,3 +44,5 @@ msbuild.wrn
 # Visual Studio 2015
 .vs/
 packages
+.idea
+node_modules

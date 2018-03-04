@@ -1,0 +1,62 @@
+﻿akka {
+	actor {
+		provider = "Akka.Cluster.ClusterActorRefProvider, Akka.Cluster"
+ 
+		serializers {
+			hyperion = "Akka.Serialization.HyperionSerializer, Akka.Serialization.Hyperion"
+		}
+ 
+		serialization-bindings {
+			"System.Object" = hyperion
+		}
+ 
+		deployment {
+
+			/videoRepo {
+				router = round-robin-pool
+				nr-of-instances = 100
+				cluster {
+					enabled = on
+					max-nr-of-instances-per-node = 5
+					allow-local-routees = off
+					use-role = videoRepoRole
+				}
+			}
+		
+			/watchedVideo {
+				router = round-robin-pool
+				nr-of-instances = 1
+				cluster {
+					enabled = on
+					max-nr-of-instances-per-node = 1
+					allow-local-routees = off
+					use-role = videoRepoRole
+				}
+			}
+		
+			/api/recommandation {
+				router = round-robin-pool
+				nr-of-instances = 100
+				cluster {
+					enabled = on
+					max-nr-of-instances-per-node = 5
+					allow-local-routees = off
+					use-role = watchedVideoRole
+				}
+			}
+		}
+	}
+			
+	remote {
+		dot-netty.tcp {
+			transport-class = "Akka.Remote.Transport.DotNetty.TcpTransport, Akka.Remote"
+			hostname = "127.0.0.1"
+			port = 4050
+		}
+	}            
+
+	cluster {
+		seed-nodes = ["akka.tcp://moviedb@127.0.0.1:4053"]
+		roles = [api]
+	}
+}

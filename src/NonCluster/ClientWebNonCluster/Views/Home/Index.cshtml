@@ -1,0 +1,81 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<br />
+
+<div class="form-inline">
+    <div class="form-group">
+        <label class="sr-only" for="lblUserId">User:</label>
+        <input id="lblUserId" type="text" class="form-control" readonly="readonly">
+    </div>
+    <button type="button" id="btnQuery" class="btn btn-default">Login</button>
+</div>
+
+<br />
+
+<ul id="movies" class="list-group">
+
+</ul>
+
+<div class="form-inline">
+    <div class="form-group">
+        <label class="sr-only" for="txtMovieId">Movie Id:</label>
+        <input id="txtMovieId" type="text" class="form-control">
+    </div>
+    <button type="button" id="btnWatch" class="btn btn-default">Watch</button>
+</div>
+
+<br />
+
+<ul id="videoStatus" class="list-group"></ul>
+
+@section Scripts{
+    <script>
+            let connection = new signalR.HubConnection('/actorBridgeHub');
+
+            connection.on("videoResponse",
+                (messages) => {
+                    var listContainer = $('#movies');
+                    listContainer.empty();
+
+                    $.each(messages, function (index, value) {
+                        var listText = value.Id +
+                            ' - ' +
+                            value.Title +
+                            ' - ' +
+                            value.Genre +
+                            ' - ' +
+                            value.RunningTime +
+                            ' - ' +
+                            value.Rating;
+
+                        listContainer.prepend('<li data-id="' + value.Id + '"> ' + listText + '</li>');
+                    });
+                });
+            
+            connection.on("videoStatus",
+                (status) => {
+                    var listContainer = $('#videoStatus');
+
+                    var listText = status.UserId + ' - ' + status.Status + ' - ' + status.VideoId;
+
+                    listContainer.prepend('<li> ' + listText + '</li>');
+                });
+
+            connection.start().then(() => {
+                var userId = connection.connection.connectionId;
+                $('#lblUserId').val(userId);
+
+                $('#btnQuery').click(function() {
+                    connection.invoke('login');
+                });
+
+                $('#btnWatch').click(function() {
+                    var movieId = $('#txtMovieId').val();
+
+                    connection.invoke('watch', movieId);
+                });
+            });           
+    </script>
+}
