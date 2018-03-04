@@ -31,51 +31,51 @@
 <ul id="videoStatus" class="list-group"></ul>
 
 @section Scripts{
-    <script src="~/signalr/hubs"></script>
     <script>
-        $(function() {
-            var chat = $.connection.actorBridgeHub;
+            let connection = new signalR.HubConnection('/actorBridgeHub');
 
-            chat.client.videoResponse = function (messages) {
-                var listContainer = $('#movies');
-                listContainer.empty();
+            connection.on("videoResponse",
+                (messages) => {
+                    var listContainer = $('#movies');
+                    listContainer.empty();
 
-                $.each(messages, function (index, value) {
-                    var listText = value.Id +
-                        ' - ' +
-                        value.Title +
-                        ' - ' +
-                        value.Genre +
-                        ' - ' +
-                        value.RunningTime +
-                        ' - ' +
-                        value.Rating;
+                    $.each(messages, function (index, value) {
+                        var listText = value.Id +
+                            ' - ' +
+                            value.Title +
+                            ' - ' +
+                            value.Genre +
+                            ' - ' +
+                            value.RunningTime +
+                            ' - ' +
+                            value.Rating;
 
-                    listContainer.prepend('<li data-id="' + value.Id + '"> ' + listText + '</li>');
+                        listContainer.prepend('<li data-id="' + value.Id + '"> ' + listText + '</li>');
+                    });
                 });
-            };
+            
+            connection.on("videoStatus",
+                (status) => {
+                    var listContainer = $('#videoStatus');
 
-            chat.client.videoStatus = function (status) {
-                var listContainer = $('#videoStatus');
+                    var listText = status.UserId + ' - ' + status.Status + ' - ' + status.VideoId;
 
-                var listText = status.UserId + ' - ' + status.Status + ' - ' + status.VideoId;
+                    listContainer.prepend('<li> ' + listText + '</li>');
+                });
 
-                listContainer.prepend('<li> ' + listText + '</li>');
-            };
-
-            $.connection.hub.start().done(function () {
-                var userId = $.connection.hub.id;
+            connection.start().then(() => {
+                var userId = connection.connection.connectionId;
                 $('#lblUserId').val(userId);
 
                 $('#btnQuery').click(function() {
-                    chat.server.login();
+                    connection.invoke('login');
                 });
 
-                $('#btnWatch').click(function () {
+                $('#btnWatch').click(function() {
                     var movieId = $('#txtMovieId').val();
-                    chat.server.watch(movieId);
+
+                    connection.invoke('watch', movieId);
                 });
-            });
-        });
+            });           
     </script>
 }

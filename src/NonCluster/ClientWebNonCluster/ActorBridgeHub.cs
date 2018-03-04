@@ -2,41 +2,35 @@
 using Actors.Messages;
 using Actors.Models;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.AspNetCore.SignalR.Hubs;
 
 using Akka.Actor;
-using Akka.Configuration;
-using Akka.Routing;
 
 namespace ClientWebNonCluster
 {
-    [HubName("actorBridgeHub")]
     public class ActorBridgeHub : Hub
     {
         public ActorBridgeHub()
-        {
-            
+        {           
         }
 
         public void Login()
         {
-            ActorRefs.ApiActor.Tell(new LoginMessage(Context.ConnectionId), ActorRefs.SignalRActor);
+            ActorReferences.ApiActor.Tell(new LoginMessage(Context.ConnectionId, ActorReferences.SignalRActor));
         }
 
         public void Watch(int movieId)
         {
-            ActorRefs.ApiActor.Tell(new WatchedVideoEvent(Context.ConnectionId, movieId), ActorRefs.SignalRActor);
+            ActorReferences.ApiActor.Tell(new WatchVideoEvent(Context.ConnectionId, movieId, ActorReferences.SignalRActor));
         }
 
         public void VideoResponse(Video[] videos)
-        {
-            
+        {           
         }
 
-        public override Task OnConnected()
+        public override Task OnConnectedAsync()
         {
             // Set connection id for just connected client only
-            return Clients.Client(Context.ConnectionId).SetConnectionId(Context.ConnectionId);
+            return Clients.Client(Context.ConnectionId).InvokeAsync("SetConnectionId", Context.ConnectionId);
         }
     }
 }

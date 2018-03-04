@@ -45,3 +45,4 @@ msbuild.wrn
 .vs/
 packages
 .idea
+node_modules

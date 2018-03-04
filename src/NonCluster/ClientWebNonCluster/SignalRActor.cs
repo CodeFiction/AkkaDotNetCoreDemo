@@ -1,30 +1,36 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Actors.Messages;
+using Actors.Models;
 using Akka.Actor;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 
 namespace ClientWebNonCluster
 {
     public class SignalRActor : ReceiveActor
     {
-        private IHubContext _hubContext;
+        private IHubContext<ActorBridgeHub> _hubContext;
 
         public SignalRActor()
         {
             Receive<RecommendationResponse>(response =>
             {
-                _hubContext.Clients.Client(response.UserId).videoResponse(response.ResponseVideos.OrderByDescending(video => video.Id).ToArray());
+                string responseResponseVideosJsonPaylod = response.ResponseVideosJsonPaylod;
+                List<Video> responseVideos = JsonConvert.DeserializeObject<List<Video>>(responseResponseVideosJsonPaylod);
+
+                _hubContext.Clients.Client(response.UserId).InvokeAsync("videoResponse", responseVideos.OrderByDescending(video => video.Id).ToList());
             });
 
             Receive<VideoStatus>(response =>
             {
-                _hubContext.Clients.Client(response.UserId).videoStatus(response);
+                _hubContext.Clients.Client(response.UserId).InvokeAsync("videoStatus", response);
             });
         }
 
         protected override void PreStart()
         {
-            _hubContext = ActorRefs.ConnectionManager.GetHubContext<ActorBridgeHub>();
+            _hubContext = ActorReferences.ActorBridgeHubContext;
         }
     }
 }
