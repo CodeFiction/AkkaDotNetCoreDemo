@@ -13,10 +13,10 @@ namespace Actors
 
         public WatchedVideoRepoActor()
         {             
-            Receive<UserWatchedVideoRequest>(request =>
+            Receive<UserWatchHistoryRequest>(request =>
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine($"{request.Recommendation.UserId} icin onceden izlemis oldugu video'lar bulundu, cevap dönülüyor.");
+                Console.WriteLine($"The videos that {request.Recommendation.UserId} had previously watched has found.");
                 Console.ResetColor();
 
                 Thread.Sleep(50);
@@ -26,13 +26,13 @@ namespace Actors
                     .Distinct()
                     .ToArray();
 
-                Sender.Tell(new UserWatchedVideoResponse(request.Recommendation, videoIds));
+                Sender.Tell(new UserWatchHistoryResponse(request.Recommendation, videoIds));
             });
 
             Receive<WatchVideoEvent>(message =>
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine($"{message.UserId} {message.VideoId}'li video bulundu, izlenmeye başlıyor.");
+                Console.WriteLine($"Playing the video {message.VideoId} for {message.UserId}");
                 Console.ResetColor();
 
                 IActorRef sender = message.Client;

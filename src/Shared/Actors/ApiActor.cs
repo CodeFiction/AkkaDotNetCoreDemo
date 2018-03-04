@@ -14,7 +14,7 @@ namespace Actors
             Receive<LoginMessage>(message =>
             {
                 Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.WriteLine($"{message.UserId}, login talebi gönderdi.");
+                Console.WriteLine($"{message.UserId} has sended login request.");
                 Console.ResetColor();
 
                 recommandationActor.Tell(new StartRecommendation(message.UserId, message.Client));
@@ -23,7 +23,7 @@ namespace Actors
             Receive<WatchVideoEvent>(watchVideoEvent =>
             {
                 Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.WriteLine($"{watchVideoEvent.UserId}, {watchVideoEvent.VideoId} id'li video için izleme talebi gönderdi.");
+                Console.WriteLine($"{watchVideoEvent.UserId} has sent watch requests for {watchVideoEvent.VideoId}");
                 Console.ResetColor();
 
                 watchedVideoActor.Tell(watchVideoEvent, watchVideoEvent.Client);

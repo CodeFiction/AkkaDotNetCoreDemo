@@ -34,7 +34,7 @@ namespace Actors
             Receive<StartRecommendation>(recommendation =>
             {
                 Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine("Video tavsiye isteğinde bulunulamıyor, lütfen daha sonra tekrar deneyiniz.");
+                Console.WriteLine("Video recommendation is not available, please try again later.");
                 Console.ResetColor();
 
                 Stash.Stash();
@@ -50,18 +50,18 @@ namespace Actors
             Receive<StartRecommendation>(recommendation =>
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"{recommendation.UserId} icin önceden izlemis oldugu video'lar soruluyor");
+                Console.WriteLine($"Requesting for previously watched videos for {recommendation.UserId}");
                 Console.ResetColor();
 
                 Thread.Sleep(50);
 
-                _watchedVideoActor.Tell(new UserWatchedVideoRequest(recommendation));
+                _watchedVideoActor.Tell(new UserWatchHistoryRequest(recommendation));
             });
 
-            Receive<UserWatchedVideoResponse>(response =>
+            Receive<UserWatchHistoryResponse>(response =>
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"{response.StartRecommendation.UserId} icin izlemis oldugu video'ların cevabı geldi, tavsiye edilecek video'lar soruluyor");
+                Console.WriteLine($"The request of videos for {response.StartRecommendation.UserId} that watched before has come, asking for recommended videos.");
                 Console.ResetColor();
 
                 int[] watchedVideos = response.VideoIds;
@@ -74,7 +74,7 @@ namespace Actors
             Receive<UserUnwatchedVideoResponse>(response =>
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"{response.Recommendation.UserId} icin tavsiye edilecek video'ların cevabı geldi.");
+                Console.WriteLine($"The request of recommended videos for {response.Recommendation.UserId} has come.");
                 Console.ResetColor();
 
                 // Issue about interoperability between .NET Full and .NET Core versions

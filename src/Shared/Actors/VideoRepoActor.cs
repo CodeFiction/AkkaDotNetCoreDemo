@@ -21,7 +21,7 @@ namespace Actors
                 StartRecommendation startRecommendation = request.ResponseStartRecommendation;
 
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($"{request.ResponseStartRecommendation.UserId} icin onceden izlemis oldugu video'ların bilgisi geldi, tavsiye edilecek video'lar getiriliyor");
+                Console.WriteLine($"History of videos for {request.ResponseStartRecommendation.UserId} that watched before has come, requesting for recommended videos.");
                 Console.ResetColor();
 
                 Thread.Sleep(50);
